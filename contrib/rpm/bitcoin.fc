@@ -1,0 +1,8 @@
+/usr/bin/gpunion-cli		--	gen_context(system_u:object_r:gpunion_exec_t,s0)
+/usr/sbin/gpuniond		--	gen_context(system_u:object_r:gpunion_exec_t,s0)
+/usr/lib(64)?/gpunion/gpuniond		--	gen_context(system_u:object_r:gpunion_exec_t,s0)
+
+/etc/gpunion(/.*)?		gen_context(system_u:object_r:gpunion_conf_t,s0)
+/var/lib/gpunion(/.*)?		gen_context(system_u:object_r:gpunion_var_lib_t,s0)
+
+(/var)?/run/gpuniond(/.*)?   gen_context(system_u:object_r:gpunion_var_run_t,s0)

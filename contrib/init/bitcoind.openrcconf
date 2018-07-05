@@ -1,0 +1,33 @@
+# /etc/conf.d/gpuniond: config file for /etc/init.d/gpuniond
+
+# Config file location
+#GPUNIOND_CONFIGFILE="/etc/gpunion/gpunion.conf"
+
+# What directory to write pidfile to?  (created and owned by $GPUNIOND_USER)
+#GPUNIOND_PIDDIR="/var/run/gpuniond"
+
+# What filename to give the pidfile
+#GPUNIOND_PIDFILE="${GPUNIOND_PIDDIR}/gpuniond.pid"
+
+# Where to write gpuniond data (be mindful that the blockchain is large)
+#GPUNIOND_DATADIR="/var/lib/gpuniond"
+
+# User and group to own gpuniond process
+#GPUNIOND_USER="gpunion"
+#GPUNIOND_GROUP="gpunion"
+
+# Path to gpuniond executable
+#GPUNIOND_BIN="/usr/bin/gpuniond"
+
+# Nice value to run gpuniond under
+#GPUNIOND_NICE=0
+
+# Additional options (avoid -conf and -datadir, use flags above)
+#GPUNIOND_OPTS=""
+
+# The timeout in seconds OpenRC will wait for gpuniond to terminate
+# after a SIGTERM has been raised.
+# Note that this will be mapped as argument to start-stop-daemon's
+# '--retry' option, which means you can specify a retry schedule
+# here. For more information see man 8 start-stop-daemon.
+GPUNIOND_SIGTERM_TIMEOUT=60

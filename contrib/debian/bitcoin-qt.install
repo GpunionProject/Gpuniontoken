@@ -1,0 +1,6 @@
+usr/local/bin/gpunion-qt usr/bin
+share/pixmaps/gpunion32.xpm usr/share/pixmaps
+share/pixmaps/gpunion16.xpm usr/share/pixmaps
+share/pixmaps/gpunion128.png usr/share/pixmaps
+debian/gpunion-qt.desktop usr/share/applications
+debian/gpunion-qt.protocol usr/share/kde4/services/

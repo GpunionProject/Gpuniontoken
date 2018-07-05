@@ -1,0 +1,13 @@
+[Desktop Entry]
+Encoding=UTF-8
+Name=Gpunion Core
+Comment=Connect to the Gpunion P2P Network
+Comment[de]=Verbinde mit dem Gpunion peer-to-peer Netzwerk
+Comment[fr]=Gpunion, monnaie virtuelle cryptographique pair à pair
+Comment[tr]=Gpunion, eşten eşe kriptografik sanal para birimi
+Exec=gpunion-qt %u
+Terminal=false
+Type=Application
+Icon=gpunion128
+MimeType=x-scheme-handler/gpunion;
+Categories=Office;Finance;

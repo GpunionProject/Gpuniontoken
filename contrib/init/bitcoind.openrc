@@ -1,0 +1,92 @@
+#!/sbin/runscript
+
+# backward compatibility for existing gentoo layout 
+#
+if [ -d "/var/lib/gpunion/.gpunion" ]; then
+	GPUNIOND_DEFAULT_DATADIR="/var/lib/gpunion/.gpunion"
+else
+	GPUNIOND_DEFAULT_DATADIR="/var/lib/gpuniond"
+fi
+
+GPUNIOND_CONFIGFILE=${GPUNIOND_CONFIGFILE:-/etc/gpunion/gpunion.conf}
+GPUNIOND_PIDDIR=${GPUNIOND_PIDDIR:-/var/run/gpuniond}
+GPUNIOND_PIDFILE=${GPUNIOND_PIDFILE:-${GPUNIOND_PIDDIR}/gpuniond.pid}
+GPUNIOND_DATADIR=${GPUNIOND_DATADIR:-${GPUNIOND_DEFAULT_DATADIR}}
+GPUNIOND_USER=${GPUNIOND_USER:-${GPUNION_USER:-gpunion}}
+GPUNIOND_GROUP=${GPUNIOND_GROUP:-gpunion}
+GPUNIOND_BIN=${GPUNIOND_BIN:-/usr/bin/gpuniond}
+GPUNIOND_NICE=${GPUNIOND_NICE:-${NICELEVEL:-0}}
+GPUNIOND_OPTS="${GPUNIOND_OPTS:-${GPUNION_OPTS}}"
+
+name="Gpunion Core Daemon"
+description="Gpunion cryptocurrency P2P network daemon"
+
+command="/usr/bin/gpuniond"
+command_args="-pid=\"${GPUNIOND_PIDFILE}\" \
+		-conf=\"${GPUNIOND_CONFIGFILE}\" \
+		-datadir=\"${GPUNIOND_DATADIR}\" \
+		-daemon \
+		${GPUNIOND_OPTS}"
+
+required_files="${GPUNIOND_CONFIGFILE}"
+start_stop_daemon_args="-u ${GPUNIOND_USER} \
+			-N ${GPUNIOND_NICE} -w 2000"
+pidfile="${GPUNIOND_PIDFILE}"
+
+# The retry schedule to use when stopping the daemon. Could be either
+# a timeout in seconds or multiple signal/timeout pairs (like
+# "SIGKILL/180 SIGTERM/300")
+retry="${GPUNIOND_SIGTERM_TIMEOUT}"
+
+depend() {
+	need localmount net
+}
+
+# verify
+# 1) that the datadir exists and is writable (or create it)
+# 2) that a directory for the pid exists and is writable
+# 3) ownership and permissions on the config file
+start_pre() {
+	checkpath \
+	-d \
+	--mode 0750 \
+	--owner "${GPUNIOND_USER}:${GPUNIOND_GROUP}" \
+	"${GPUNIOND_DATADIR}"
+
+	checkpath \
+	-d \
+	--mode 0755 \
+	--owner "${GPUNIOND_USER}:${GPUNIOND_GROUP}" \
+	"${GPUNIOND_PIDDIR}"
+
+	checkpath -f \
+	-o ${GPUNIOND_USER}:${GPUNIOND_GROUP} \
+	-m 0660 \
+	${GPUNIOND_CONFIGFILE}
+
+	checkconfig || return 1
+}
+
+checkconfig()
+{
+	if ! grep -qs '^rpcpassword=' "${GPUNIOND_CONFIGFILE}" ; then
+		eerror ""
+		eerror "ERROR: You must set a secure rpcpassword to run gpuniond."
+		eerror "The setting must appear in ${GPUNIOND_CONFIGFILE}"
+		eerror ""
+		eerror "This password is security critical to securing wallets "
+		eerror "and must not be the same as the rpcuser setting."
+		eerror "You can generate a suitable random password using the following "
+		eerror "command from the shell:"
+		eerror ""
+		eerror "bash -c 'tr -dc a-zA-Z0-9 < /dev/urandom | head -c32 && echo'"
+		eerror ""
+		eerror "It is recommended that you also set alertnotify so you are "
+		eerror "notified of problems:"
+		eerror ""
+		eerror "ie: alertnotify=echo %%s | mail -s \"Gpunion Alert\"" \
+			"admin@foo.com"
+		eerror ""
+		return 1
+	fi
+}

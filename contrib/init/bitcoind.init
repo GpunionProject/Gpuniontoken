@@ -1,0 +1,67 @@
+#!/bin/bash
+#
+#  gpuniond The gpunion core server.
+#
+#
+# chkconfig: 345 80 20
+# description: gpuniond
+# processname: gpuniond
+#
+
+# Source function library.
+. /etc/init.d/functions
+
+# you can override defaults in /etc/sysconfig/gpuniond, see below
+if [ -f /etc/sysconfig/gpuniond ]; then
+        . /etc/sysconfig/gpuniond
+fi
+
+RETVAL=0
+
+prog=gpuniond
+# you can override the lockfile via GPUNIOND_LOCKFILE in /etc/sysconfig/gpuniond
+lockfile=${GPUNIOND_LOCKFILE-/var/lock/subsys/gpuniond}
+
+# gpuniond defaults to /usr/bin/gpuniond, override with GPUNIOND_BIN
+gpuniond=${GPUNIOND_BIN-/usr/bin/gpuniond}
+
+# gpuniond opts default to -disablewallet, override with GPUNIOND_OPTS
+gpuniond_opts=${GPUNIOND_OPTS--disablewallet}
+
+start() {
+    echo -n $"Starting $prog: "
+    daemon $DAEMONOPTS $gpuniond $gpuniond_opts
+    RETVAL=$?
+    echo
+    [ $RETVAL -eq 0 ] && touch $lockfile
+    return $RETVAL
+}
+
+stop() {
+    echo -n $"Stopping $prog: "
+    killproc $prog
+    RETVAL=$?
+    echo
+    [ $RETVAL -eq 0 ] && rm -f $lockfile
+    return $RETVAL
+}
+
+case "$1" in
+    start)
+        start
+        ;;
+    stop)
+        stop
+        ;;
+    status)
+        status $prog
+        ;;
+    restart)
+        stop
+        start
+        ;;
+    *)
+        echo "Usage: service $prog {start|stop|status|restart}"
+        exit 1
+        ;;
+esac

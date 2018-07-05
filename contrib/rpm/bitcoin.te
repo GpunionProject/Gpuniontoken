@@ -1,0 +1,81 @@
+policy_module(gpunion, 1.100.1)
+
+########################################
+#
+# Declarations
+#
+
+type gpunion_t;
+type gpunion_exec_t;
+init_daemon_domain(gpunion_t, gpunion_exec_t)
+
+permissive gpunion_t;
+
+type gpunion_initrc_exec_t;
+init_script_file(gpunion_initrc_exec_t)
+
+type gpunion_conf_t;
+files_type(gpunion_conf_t)
+
+type gpunion_var_lib_t;
+files_type(gpunion_var_lib_t)
+
+type gpunion_var_run_t;
+files_type(gpunion_var_run_t)
+
+type gpunion_port_t;
+corenet_port(gpunion_port_t)
+
+########################################
+#
+# gpunion local policy
+#
+allow gpunion_t self:process { fork };
+
+allow gpunion_t self:fifo_file rw_fifo_file_perms;
+allow gpunion_t self:unix_stream_socket create_stream_socket_perms;
+
+manage_dirs_pattern(gpunion_t, gpunion_conf_t, gpunion_conf_t)
+manage_files_pattern(gpunion_t, gpunion_conf_t, gpunion_conf_t)
+
+manage_dirs_pattern(gpunion_t, gpunion_var_lib_t, gpunion_var_lib_t)
+manage_files_pattern(gpunion_t, gpunion_var_lib_t, gpunion_var_lib_t)
+files_var_lib_filetrans(gpunion_t, gpunion_var_lib_t, { dir file })
+
+manage_dirs_pattern(gpunion_t, gpunion_var_run_t, gpunion_var_run_t)
+manage_files_pattern(gpunion_t, gpunion_var_run_t, gpunion_var_run_t)
+
+sysnet_dns_name_resolve(gpunion_t)
+corenet_all_recvfrom_unlabeled(gpunion_t)
+
+allow gpunion_t self:tcp_socket create_stream_socket_perms;
+corenet_tcp_sendrecv_generic_if(gpunion_t)
+corenet_tcp_sendrecv_generic_node(gpunion_t)
+corenet_tcp_sendrecv_all_ports(gpunion_t)
+corenet_tcp_bind_generic_node(gpunion_t)
+
+gen_require(`
+    type gpunion_port_t;
+')
+allow gpunion_t gpunion_port_t:tcp_socket name_bind;
+
+gen_require(`
+    type gpunion_port_t;
+')
+allow gpunion_t gpunion_port_t:tcp_socket name_connect;
+
+domain_use_interactive_fds(gpunion_t)
+
+files_read_etc_files(gpunion_t)
+
+miscfiles_read_localization(gpunion_t)
+
+sysnet_dns_name_resolve(gpunion_t)
+
+allow gpunion_t gpunion_exec_t:file execute_no_trans;
+allow gpunion_t self:process setsched;
+corecmd_exec_ls(gpunion_t)
+corenet_tcp_connect_http_port(gpunion_t)
+dev_read_urand(gpunion_t)
+fs_getattr_xattr_fs(gpunion_t)
+kernel_read_system_state(gpunion_t)
