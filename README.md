@@ -65,18 +65,17 @@ Exchange Listing
 GUT Token Swap in mainnet
 
 ### Q3-Q4 2019
-GPUnion Alpha mainnet release
+GPUnionDVM mainnet release
 
 ### Q4 2019
-Team Hiring
 GPUnioin ML testnet Release
 
 ### Q1 2020
 GPUnion ML mainnet release
-GPUnion Brain testnet release
+GPUnionFOG testnet release
 
 ### Q2 2020
-GPUnion Brain integrated with IPFS
+GPUnionFOG integrated with IPFS
 GPUnion Rendering testnet release
 
 ### Q3 2020
